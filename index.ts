@@ -235,6 +235,7 @@ async function sendBotNotification(text: string) {
   }
 
   const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+  console.log("📤 Enviando notificação para o bot...", url);
 
   const response = await fetch(url, {
     method: "POST",
