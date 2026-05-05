@@ -1,27 +1,35 @@
+import "dotenv/config";
+
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
 import { NewMessage } from "telegram/events/index.js";
 import input from "input";
-import "dotenv/config";
-
 
 const apiId = Number(process.env.TELEGRAM_API_ID);
-const apiHash = process.env.TELEGRAM_API_HASH || "";
-const SESSION_STRING = process.env.TELEGRAM_SESSION_STRING || "";
+const apiHash = process.env.TELEGRAM_API_HASH?.trim() || "";
+const SESSION_STRING = process.env.TELEGRAM_SESSION_STRING?.trim() || "";
 
-const stringSession = new StringSession(SESSION_STRING.trim());
+const BOT_TOKEN = process.env.BOT_TOKEN?.trim() || "";
+const BOT_CHAT_ID = process.env.BOT_CHAT_ID?.trim() || "";
+
+if (!apiId || !apiHash || !SESSION_STRING || !BOT_TOKEN || !BOT_CHAT_ID) {
+  console.error("❌ Variáveis ausentes:");
+  console.error({
+    TELEGRAM_API_ID: !!apiId,
+    TELEGRAM_API_HASH: !!apiHash,
+    TELEGRAM_SESSION_STRING: !!SESSION_STRING,
+    BOT_TOKEN: !!BOT_TOKEN,
+    BOT_CHAT_ID: !!BOT_CHAT_ID,
+  });
+
+  throw new Error("Variáveis de ambiente obrigatórias não configuradas.");
+}
+
+const stringSession = new StringSession(SESSION_STRING);
 
 const client = new TelegramClient(stringSession, apiId, apiHash, {
   connectionRetries: 5,
 });
-
-// 🤖 Dados do bot
-const BOT_TOKEN = process.env.BOT_TOKEN || "";
-const BOT_CHAT_ID = process.env.BOT_CHAT_ID || "";
-
-if (!apiId || !apiHash || !SESSION_STRING || !BOT_TOKEN || !BOT_CHAT_ID) {
-  throw new Error("Variáveis de ambiente obrigatórias não configuradas.");
-}
 
 // ⏱️ Tempo mínimo para ignorar mensagens idênticas
 // Exemplo: se a mesma mensagem aparecer de novo em até 60 segundos, ignora.
